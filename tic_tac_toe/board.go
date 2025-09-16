@@ -6,6 +6,7 @@ import (
 
 type Board struct {
 	board [3][3]int
+	State BoardState
 }
 
 func (b Board) PrintBoard() {

@@ -12,5 +12,6 @@ func main() {
 	// to see how GoLand suggests fixing the warning.</p><p>Alternatively, if available, click the lightbulb to view possible fixes.</p>
 	s := tic_tac_toe.Board{}
 	s.PrintBoard()
+	s.State.StartGame()
 
 }
