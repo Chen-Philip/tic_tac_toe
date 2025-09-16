@@ -8,12 +8,13 @@ import (
 	"strings"
 )
 
-type BoardState struct {
+type Game struct {
 	isGameOver bool
 	turn       int
+	board      Board
 }
 
-func getMove() (int, int) {
+func (g *Game) getMove() (int, int) {
 	x, y := -1, -1
 	for x == -1 && y == -1 {
 		reader := bufio.NewReader(os.Stdin)
@@ -28,19 +29,31 @@ func getMove() (int, int) {
 
 			if (err1 != nil) || (err2 != nil) {
 				fmt.Println("The inputs have to be numbers.")
-			} else {
+			} else if g.board.isValidMove(num2, num1) {
 				x = num1
 				y = num2
 			}
 		}
 	}
-	return x, y
+	return y, x
 }
 
-func (s *BoardState) StartGame() {
+func (g *Game) StartGame() {
+
+	hasWinner := false
 	i := 0
-	for i < 3 {
-		getMove()
-		i++
+	for !hasWinner && i < 9 {
+		x, y := g.getMove()
+		g.board.makeMove(x, y, i%2 == 0)
+		hasWinner = g.board.isWin
+		if !hasWinner {
+			i++
+		}
+	}
+
+	if hasWinner {
+		fmt.Println("Player", i%2, "has won!")
+	} else {
+		fmt.Println("It's a tie!")
 	}
 }
