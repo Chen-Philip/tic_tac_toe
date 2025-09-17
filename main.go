@@ -1,17 +1,46 @@
 package main
 
 import (
-	"chess/tic_tac_toe"
+	routes "chess/routes"
+	// "chess/tic_tac_toe"
+	"os"
+
+	"github.com/gin-gonic/gin"
 )
 
-//TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
-// the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.</p>
-
 func main() {
-	//TIP <p>Press <shortcut actionId="ShowIntentionActions"/> when your caret is at the underlined text
-	// to see how GoLand suggests fixing the warning.</p><p>Alternatively, if available, click the lightbulb to view possible fixes.</p>
-	s := tic_tac_toe.Game{}
+	// Starts tic tac toe game in terminal:
+	//s := tic_tac_toe.Game{}
+	//s.StartGame()
 
-	s.StartGame()
+	// Reads the system's environment variable called PORT
+	port := os.Getenv("PORT")
+	// Sets port to default value if it doesnt have a value
+	if port == "" {
+		port = "8000"
+	}
 
+	router := gin.New()
+	router.Use(gin.Logger())
+
+	routes.AuthRoutes(router)
+	routes.UserRoutes(router)
+
+	// 1. router.GET("/api-1", ... registers a handler (function that processes incoming http
+	//		requests and produces response) for HTTP get requests to the path api-1
+	// 2. func(c *gin.Context) { ... } the inline handler function for the request
+	// 3. gin.Context holds the request and respone info (header, params, JSON body ...
+	// 4. c.JSON(200, gin.H{...} sends a JSON response back with status code 200
+	// 5. gin.H{...} creates the json, but gin.H specifially maps a string to any dataype
+	// Therefore the following code upon recieving a HTTP getrequest to the specified path will
+	//		send a JSON response with 200 status code and a body of whatever gin.wH has
+	router.GET("/api-1", func(c *gin.Context) {
+		c.JSON(200, gin.H{"success": "Access granted for api-1"})
+	})
+
+	router.GET("/api-1", func(c *gin.Context) {
+		c.JSON(200, gin.H{"success": "Access granted for api-2"})
+	})
+
+	router.RUN(":" + port)
 }
