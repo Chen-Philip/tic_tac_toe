@@ -9,9 +9,8 @@ import (
 )
 
 type Game struct {
-	isGameOver bool
-	turn       int
-	board      Board
+	turn  int
+	board Board
 }
 
 func (g *Game) getMove() (int, int) {
@@ -38,14 +37,19 @@ func (g *Game) getMove() (int, int) {
 	return y, x
 }
 
-func (g *Game) StartGame() {
+func (g *Game) resetGame() {
+	g.board.resetBoard()
+	g.turn = 0
+}
 
+func (g *Game) StartGame() {
 	hasWinner := false
 	i := 0
 	for !hasWinner && i < 9 {
 		x, y := g.getMove()
 		g.board.makeMove(x, y, i%2 == 0)
 		hasWinner = g.board.isWin
+
 		if !hasWinner {
 			i++
 		}
@@ -56,4 +60,6 @@ func (g *Game) StartGame() {
 	} else {
 		fmt.Println("It's a tie!")
 	}
+
+	g.resetGame()
 }

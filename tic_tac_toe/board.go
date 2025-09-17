@@ -10,13 +10,28 @@ type Board struct {
 	isWin      bool
 }
 
+func (b *Board) resetBoard() {
+	// Resets the board
+	for i := 0; i < len(b.board); i++ {
+		for j := 0; j < len(b.board[i]); j++ {
+			b.board[i][j] = 0
+		}
+	}
+	// Resets the tracker
+	for i := 0; i < len(b.winTracker); i++ {
+		b.winTracker[i] = 0
+	}
+	// Resets the win flag
+	b.isWin = false
+}
+
 func (b *Board) makeMove(x, y int, isPlayer1 bool) {
 	player := 1
 	if !isPlayer1 {
 		player = -1
 	}
-	b.board[x][y] = player
 
+	// Updates the tracker
 	isWin := b.updateTracker(x, player)
 	isWin = isWin || b.updateTracker(3+y, player)
 	if x+y == 2 {
@@ -25,8 +40,10 @@ func (b *Board) makeMove(x, y int, isPlayer1 bool) {
 	if x == y {
 		isWin = isWin || b.updateTracker(7, player)
 	}
-	b.PrintBoard()
 
+	// Updates and prints the board
+	b.PrintBoard()
+	b.board[x][y] = player
 	b.isWin = isWin
 }
 
@@ -59,10 +76,12 @@ func (b *Board) PrintBoard() {
 				move = "X"
 			}
 			fmt.Print(" ", move, " ")
+			// Prints the divider
 			if j < len(row)-1 {
 				fmt.Print("|")
 			}
 		}
+		// Prints the divider
 		if i < len(b.board)-1 {
 			fmt.Println("\n---+---+---")
 		}
