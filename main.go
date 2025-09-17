@@ -20,6 +20,13 @@ func main() {
 		port = "8000"
 	}
 
+	// gin.New() creates a new Gin engine without any middleware, unlike gin.default()
+	// Gin engine: the main thing that runs the web server. It handles the router, which
+	//		maps paths to handlers, middleware and configuration for running http server
+	// Middleware: the middle steps/ code that runs before (sometimes after) the route handle
+	// 			the middleman between the request and the handler function
+	// router.Use(gin.Logger()): addes middleware gin.Logger to our engine
+	// gin.Logger: jsut logs the requests
 	router := gin.New()
 	router.Use(gin.Logger())
 
