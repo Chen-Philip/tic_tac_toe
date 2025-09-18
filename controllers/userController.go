@@ -25,9 +25,27 @@ import (
 var userCollection *mongo.Collection = database.OpenCollection(database.Client, "user")
 var validate = validator.New()
 
-func HashPassword()
+func HashPassword(password string) string {
+	// Password needs to be hashed before being added to the database incase the database is breached, all the passwords
+	// arent just available
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14) // cost is how expensive the hash is, higher = stronger
+	if err != nil {
+		log.Panic(err)
+	}
+	return string(bytes)
+}
 
-func VerifyPassword()
+func VerifyPassword(userPassword, givenPassword string) (bool, string) {
+	err := bcrypt.CompareHashAndPassword([]byte(userPassword), []byte(givenPassword))
+	check := true
+	msg := ""
+
+	if err != nil {
+		msg = fmt.Sprintf("email or password is incorrect")
+		check = false
+	}
+	return check, msg
+}
 
 func Signup() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -36,12 +54,14 @@ func Signup() gin.HandlerFunc {
 
 		if err := c.BindJSON(&user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			defer cancel()
 			return
 		}
 
 		validationErr := validate.Struct(user)
 		if validationErr != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
+			defer cancel()
 			return
 		}
 
@@ -53,6 +73,8 @@ func Signup() gin.HandlerFunc {
 			log.Panic(err)
 		}
 
+		password := HashPassword(*user.Password)
+		user.Password = &password
 		if count > 0 {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "this username already exists"})
 		}
@@ -79,7 +101,57 @@ func Signup() gin.HandlerFunc {
 
 }
 
-func Login()
+func Login() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		var user models.User
+		var foundUser models.User
+
+		if err := c.BindJSON(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			defer cancel()
+			return
+		}
+
+		// Try to find the user in our database given the username
+		err := userCollection.FindOne(ctx, bson.M{"username": user.Username}).Decode(&foundUser)
+		defer cancel()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "email or password is incorrect"})
+			return
+		}
+
+		// This is just additional checks (not mandatory)
+		if foundUser.Username == nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "user not found"})
+			return
+		}
+
+		// With the found user, check if the passwords match with each other
+		passwordIsValid, msg := VerifyPassword(*user.Password, *foundUser.Password)
+		defer cancel()
+		if !passwordIsValid {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": msg})
+			return
+		}
+
+		token, refreshToken, _ := helper.GenerateAllTokens(
+			*foundUser.Username,
+			*foundUser.First_name,
+			*foundUser.Last_name,
+			*&foundUser.User_id,
+		)
+		helper.UpdateAllTokens(token, refreshToken, foundUser.User_id)
+		err = userCollection.FindOne(ctx, bson.M{"user_id": foundUser.User_id}).Decode(&foundUser)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, foundUser)
+
+	}
+}
 
 func GetUsers()
 

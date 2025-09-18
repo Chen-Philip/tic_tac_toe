@@ -22,7 +22,7 @@ func DBinstance() *mongo.Client {
 	MongoDb := os.Getenv("MONGODB_URL")
 
 	// Set a timeout context for the connection (context is a messenger, so in this case
-	// it lets the API know to cancel after 10 seconds
+	// it lets the API know to cancel after 10 seconds)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel() // cleans up resoucrese immediatly after function finished, even if it doesn't timeout
 

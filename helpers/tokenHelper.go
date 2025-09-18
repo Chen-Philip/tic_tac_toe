@@ -63,3 +63,37 @@ func GenerateAllTokens(username, first_name, last_name, uid string) (signedToken
 
 	return token, refreshToken, err
 }
+
+func UpdateAllTokens(signedToken string, signedRefreshToken string, userId string) {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+
+	var updateObj primitive.D // ordered slice of key-value pairs,
+	// M is unordered for mondodb, d is ordered
+
+	updateObj = append(updateObj, bson.E{"token", signedToken})
+	updateObj = append(updateObj, bson.E{"refresh_token", signedRefreshToken})
+
+	updatedAt, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	updateObj = append(updateObj, bson.E{"updated_at", updatedAt})
+
+	upsert := true // if doc exists -> update it, else create a new doc with the given data
+	filter := bson.M{"user_id": userId}
+	opt := options.UpdateOptions{
+		Upsert: &upsert,
+	}
+
+	// We have a _ since we dont care what it returns, we only care that it updates
+	_, err := userCollection.UpdateOne(
+		ctx,
+		filter,                      // finds document with user_id == userId
+		bson.D{{"$set", updateObj}}, //
+		&opt,                        // makes update to allow for upserts (creating new docs)
+	)
+
+	defer cancel()
+	if err != nil {
+		log.Panic(err)
+	}
+	return
+
+}
