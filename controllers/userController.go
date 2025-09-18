@@ -2,24 +2,22 @@ package controllers
 
 import (
 	"chess/database"
-	"chess/helpers"
 	helper "chess/helpers"
 	"chess/models"
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var userCollection *mongo.Collection = database.OpenCollection(database.Client, "user")
@@ -153,7 +151,70 @@ func Login() gin.HandlerFunc {
 	}
 }
 
-func GetUsers()
+func GetUsers() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Dont have an admin so dont need this
+		//helper.CheckUserTyoe(c, "ADMIN"); err != nil{
+		//	c.JSON(http.StatusBadRequest, gin.H{"error", err.Error()})
+		//	return
+		//}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+
+		// How many records we want per page
+		recordPerPage, err := strconv.Atoi(c.Query("recordPerPage"))
+		if err != nil || recordPerPage < 1 {
+			recordPerPage = 10 // Default value
+		}
+
+		page, err1 := strconv.Atoi(c.Query("page"))
+		if err1 != nil || page < 1 {
+			page = 1 // Default value
+		}
+
+		// like skip and limimt in node js
+		startIndex := (page - 1) * recordPerPage
+		startIndex, err = strconv.Atoi(c.Query("startIndex")) // startIndex doesn't get changed if URL doesn't have it
+
+		// Matches all documents since it an empty filter
+		matchStage := bson.D{{"$match", bson.D{{}}}}
+
+		// Group the documents in the state by a particular id, and then find the counts of the group. THis makes us
+		// 	lose the data so we have $push to keep the data
+		groupState := bson.D{{"$group", bson.D{
+			{"_id", bson.D{{"_id", "null"}}},     // Group all the data based off id
+			{"total_count", bson.D{{"$sum", 1}}}, // Create a total count
+			// Keep the data in the root without this we will only have a group objext with the count and no data
+			{"data", bson.D{{"$push", "$$Root"}}},
+		}}}
+
+		// Define which data points / fields go to the user / caller and which ones dont
+		projectStage := bson.D{
+			{"project", bson.D{
+				{"_id", 0},         // Removes id
+				{"total_count", 1}, // Keeps total_count
+				{"user_items", bson.D{
+					{"$slice", []interface{}{"$data", startIndex, recordPerPage}}, // paginated slice of "data"
+				}},
+			}},
+		}
+
+		result, err := userCollection.Aggregate(ctx, mongo.Pipeline{
+			matchStage, groupState, projectStage,
+		})
+		defer cancel()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "error occured while listing user items"})
+		}
+
+		var allUsers []bson.M
+		if err = result.All(ctx, &allUsers); err != nil {
+			log.Fatal(err)
+		}
+
+		c.JSON(http.StatusOK, allUsers[0])
+	}
+}
 
 // Only ADMINS can get this because users shouldn't be able to access other users
 func GetUser() gin.HandlerFunc {
