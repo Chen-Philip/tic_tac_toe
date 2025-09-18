@@ -3,8 +3,9 @@ package middleware
 import (
 	helper "chess/helpers"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Authenticate() gin.HandlerFunc {

@@ -34,12 +34,12 @@ func HashPassword(password string) string {
 }
 
 func VerifyPassword(userPassword, givenPassword string) (bool, string) {
-	err := bcrypt.CompareHashAndPassword([]byte(userPassword), []byte(givenPassword))
+	err := bcrypt.CompareHashAndPassword([]byte(givenPassword), []byte(userPassword))
 	check := true
 	msg := ""
 
 	if err != nil {
-		msg = fmt.Sprintf("email or password is incorrect")
+		msg = fmt.Sprintf("email or password is incorrect 2")
 		check = false
 	}
 	return check, msg
@@ -115,7 +115,7 @@ func Login() gin.HandlerFunc {
 		err := userCollection.FindOne(ctx, bson.M{"username": user.Username}).Decode(&foundUser)
 		defer cancel()
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "email or password is incorrect"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "email or password is incorrect 1"})
 			return
 		}
 
@@ -185,19 +185,17 @@ func GetUsers() gin.HandlerFunc {
 			{"_id", bson.D{{"_id", "null"}}},     // Group all the data based off id
 			{"total_count", bson.D{{"$sum", 1}}}, // Create a total count
 			// Keep the data in the root without this we will only have a group objext with the count and no data
-			{"data", bson.D{{"$push", "$$Root"}}},
+			{"data", bson.D{{"$push", "$$ROOT"}}},
 		}}}
 
 		// Define which data points / fields go to the user / caller and which ones dont
-		projectStage := bson.D{
-			{"project", bson.D{
-				{"_id", 0},         // Removes id
-				{"total_count", 1}, // Keeps total_count
-				{"user_items", bson.D{
-					{"$slice", []interface{}{"$data", startIndex, recordPerPage}}, // paginated slice of "data"
-				}},
+		projectStage := bson.D{{"$project", bson.D{
+			{"_id", 0},         // Removes id
+			{"total_count", 1}, // Keeps total_count
+			{"user_items", bson.D{
+				{"$slice", []interface{}{"$data", startIndex, recordPerPage}}, // paginated slice of "data"
 			}},
-		}
+		}}}
 
 		result, err := userCollection.Aggregate(ctx, mongo.Pipeline{
 			matchStage, groupState, projectStage,
