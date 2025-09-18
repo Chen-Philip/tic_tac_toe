@@ -4,16 +4,15 @@ import (
 	"chess/database"
 	"context"
 	"fmt"
+	"log"
+	"os"
+	"time"
+
 	jwt "github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"golang.org/x/crypto/openpgp/packet"
-
-	"log"
-	"os"
-	"time"
 )
 
 // THe JWT (JSON web token) token makes a token by hashing the data you give it
@@ -94,6 +93,38 @@ func UpdateAllTokens(signedToken string, signedRefreshToken string, userId strin
 	if err != nil {
 		log.Panic(err)
 	}
-	return
 
+	return
+}
+
+func ValidateToken(signedToken string) (claims *SignedDetails, msg string) {
+	// Claims are the information (KV pairs) stored inside the token's payload
+	token, err := jwt.ParseWithClaims(
+		signedToken,
+		&SignedDetails{}, // token gets decoded into this struct
+		func(token *jwt.Token) (interface{}, error) { // tells the parser what secret key to use
+			return []byte(SECRET_KEY), nil
+		},
+	)
+
+	if err != nil {
+		msg = err.Error()
+		return
+	}
+
+	// Extract the claims and checks if its the right type
+	claims, ok := token.Claims.(*SignedDetails)
+	if !ok {
+		msg = fmt.Sprintf("the token is invalid")
+		msg = err.Error()
+		return
+	}
+
+	if claims.ExpiresAt < time.Now().Local().Unix() {
+		msg = fmt.Sprintf("token is expired")
+		msg = err.Error()
+		return
+	}
+
+	return claims, msg
 }
