@@ -2,6 +2,7 @@ package routes
 
 import (
 	controller "chess/controllers"
+
 	"github.com/gin-gonic/gin"
 )
 
