@@ -1,11 +1,11 @@
 package main
 
 import (
-	routes "chess/routes"
-	// "chess/tic_tac_toe"
-	"os"
-
+	"chess/routes"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"os"
+	"time"
 )
 
 func main() {
@@ -29,6 +29,21 @@ func main() {
 	// gin.Logger: jsut logs the requests
 	router := gin.New()
 	router.Use(gin.Logger())
+
+	// Add middleware Cors so that frontend can talk to backend (need this for when frontend and backend are from different origins)
+	// AllowHeaders: What headers the frontend sends that the server will accept
+	//		Content-type: needed for sending json
+	// 		Authorization: Needed for sending tokens, or else JWT and authorization
+	// MaxAge: Kind of like a "remember me", gives time frame to not need the preflight request
+	// Whenever a request is sent, a preflight request is sent to make sure the frontend can access the backend
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"}, // React frontend, what websties can bacvkend talk to
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"}, // Gives full method access
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{}, // Specify which headers can be read by frontend
+		AllowCredentials: false, // can the sites send cookies/auth info with requests, I dont need it because I use token apis
+		MaxAge:           12 * time.Hour,
+	}))
 
 	routes.AuthRoutes(router)
 	routes.UserRoutes(router)
