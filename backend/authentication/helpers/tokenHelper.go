@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"tictactoe/database"
+	"tictactoe/authentication/database"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"

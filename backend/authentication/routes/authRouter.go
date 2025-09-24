@@ -1,7 +1,7 @@
 package routes
 
 import (
-	controller "tictactoe/controllers"
+	controller "tictactoe/authentication/controllers"
 
 	"github.com/gin-gonic/gin"
 )

@@ -3,7 +3,7 @@ package middleware
 import (
 	"fmt"
 	"net/http"
-	helper "tictactoe/helpers"
+	helper "tictactoe/authentication/helpers"
 
 	"github.com/gin-gonic/gin"
 )

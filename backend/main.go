@@ -1,11 +1,12 @@
 package main
 
 import (
+	"os"
+	"tictactoe/authentication/routes"
+	"time"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"os"
-	"tictactoe/routes"
-	"time"
 )
 
 func main() {

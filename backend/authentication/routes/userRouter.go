@@ -1,8 +1,8 @@
 package routes
 
 import (
-	controller "tictactoe/controllers"
-	"tictactoe/middleware"
+	controller "tictactoe/authentication/controllers"
+	"tictactoe/authentication/middleware"
 
 	"github.com/gin-gonic/gin"
 )
