@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Container, Form, Button, Header } from "semantic-ui-react";
+import { useNavigate } from "react-router-dom";
 
 const endpoint = "http://localhost:9000";
 
-function Login() {
+function AuthScreen() {
   // for login
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +17,7 @@ function Login() {
 
   // Shared states
   const [isLogin, setIsLogin] = useState(true);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent browser's default behavior
@@ -44,11 +46,12 @@ function Login() {
       }
       authPath = "/users/signup"
     }
-    
+
     // Send the response
     try {
       const response = await axios.post(`${endpoint}${authPath}`, authData);
       console.log(" Login successful:", response.data);
+      navigate("/profile", { state: response.data });
     } catch (error) {
       console.error("Login failed:", error.response?.data || error.message);
     }
@@ -135,4 +138,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default AuthScreen;
