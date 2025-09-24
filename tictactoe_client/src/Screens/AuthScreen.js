@@ -54,6 +54,7 @@ function AuthScreen() {
       navigate("/profile", { state: response.data });
     } catch (error) {
       console.error("Login failed:", error.response?.data || error.message);
+      alert("Login/Signup failed. Please try again.");
     }
   };
 
