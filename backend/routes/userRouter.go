@@ -1,8 +1,8 @@
 package routes
 
 import (
-	controller "chess/controllers"
-	"chess/middleware"
+	controller "tictactoe/controllers"
+	"tictactoe/middleware"
 
 	"github.com/gin-gonic/gin"
 )

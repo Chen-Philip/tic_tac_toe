@@ -1,11 +1,11 @@
 package helpers
 
 import (
-	"chess/database"
 	"context"
 	"fmt"
 	"log"
 	"os"
+	"tictactoe/database"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"

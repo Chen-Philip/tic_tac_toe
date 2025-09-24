@@ -1,4 +1,4 @@
-module chess
+module tictactoe
 
 go 1.25
 

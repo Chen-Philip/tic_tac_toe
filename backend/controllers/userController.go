@@ -1,14 +1,14 @@
 package controllers
 
 import (
-	"chess/database"
-	helper "chess/helpers"
-	"chess/models"
 	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"tictactoe/database"
+	helper "tictactoe/helpers"
+	"tictactoe/models"
 	"time"
 
 	"github.com/gin-gonic/gin"

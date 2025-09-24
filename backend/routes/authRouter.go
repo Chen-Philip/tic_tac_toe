@@ -1,7 +1,7 @@
 package routes
 
 import (
-	controller "chess/controllers"
+	controller "tictactoe/controllers"
 
 	"github.com/gin-gonic/gin"
 )
