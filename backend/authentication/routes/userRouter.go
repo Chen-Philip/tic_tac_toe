@@ -10,7 +10,6 @@ import (
 // UserRoutes We are using middleware here to ensure that both routes here are protected. Authroutes aren't protected
 // because the user does't have a token yet. After loging, theyll have a token that they should use.
 func UserRoutes(incomingRoutes *gin.Engine) {
-	incomingRoutes.Use(middleware.Authenticate())
-	incomingRoutes.GET("/users", controller.GetUsers())
-	incomingRoutes.GET("/users/:user_id", controller.GetUser())
+	incomingRoutes.GET("/users", middleware.Authenticate(), controller.GetUsers())
+	incomingRoutes.GET("/users/:user_id", middleware.Authenticate(), controller.GetUser())
 }

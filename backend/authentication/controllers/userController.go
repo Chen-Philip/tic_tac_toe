@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"tictactoe/authentication/database"
 	"tictactoe/authentication/helpers"
 	"tictactoe/authentication/models"
+	"tictactoe/database"
 	"time"
 
 	"github.com/gin-gonic/gin"

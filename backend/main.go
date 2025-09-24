@@ -2,7 +2,8 @@ package main
 
 import (
 	"os"
-	"tictactoe/authentication/routes"
+	authRoutes "tictactoe/authentication/routes"
+	wsRoutes "tictactoe/websocket/routes"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -46,8 +47,9 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	routes.AuthRoutes(router)
-	routes.UserRoutes(router)
+	authRoutes.AuthRoutes(router)
+	authRoutes.UserRoutes(router)
+	wsRoutes.GameRoomRoutes(router)
 
 	// 1. router.GET("/api-1", ... registers a handler (function that processes incoming http
 	//		requests and produces response) for HTTP get requests to the path api-1
@@ -57,13 +59,14 @@ func main() {
 	// 5. gin.H{...} creates the json, but gin.H specifially maps a string to any dataype
 	// Therefore the following code upon recieving a HTTP getrequest to the specified path will
 	//		send a JSON response with 200 status code and a body of whatever gin.wH has
-	router.GET("/api-1", func(c *gin.Context) {
-		c.JSON(200, gin.H{"success": "Access granted for api-1"})
-	})
-
-	router.GET("/api-2", func(c *gin.Context) {
-		c.JSON(200, gin.H{"success": "Access granted for api-2"})
-	})
+	// NOTE: THIS IS COMMENTED OUT SINCE API-1 AND API-2 IS NEVER USED
+	//router.GET("/api-1", func(c *gin.Context) {
+	//	c.JSON(200, gin.H{"success": "Access granted for api-1"})
+	//})
+	//
+	//router.GET("/api-2", func(c *gin.Context) {
+	//	c.JSON(200, gin.H{"success": "Access granted for api-2"})
+	//})
 
 	router.Run(":" + port)
 }

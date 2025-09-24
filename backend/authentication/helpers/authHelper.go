@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"errors"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,7 +25,6 @@ func MatchUserTypeToUid(c *gin.Context, userId string) (err error) {
 	// if userType == "USER" && uid != userId {
 	if uid != userId {
 		err = errors.New("unauthorized access to this resource")
-		//return err
 	}
 
 	// err = CheckUserTipe(c, userType)
