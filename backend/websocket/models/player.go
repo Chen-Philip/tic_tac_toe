@@ -9,16 +9,16 @@ import (
 )
 
 type Player struct {
-	User_id  string
-	Conn     *websocket.Conn
-	GameRoom *GameRoom
-	mu       sync.Mutex
+	User_id   string
+	Conn      *websocket.Conn
+	Is_closed bool
+	GameRoom  *GameRoom
+	mu        sync.Mutex
 }
 
 func (p *Player) Read() {
 	defer func() {
 		p.GameRoom.Unregister <- p
-		p.Conn.Close()
 	}()
 
 	for {

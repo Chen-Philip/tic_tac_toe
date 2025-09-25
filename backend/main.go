@@ -13,7 +13,7 @@ import (
 func main() {
 	// Starts tic tac toe game in terminal:
 	//s := tic_tac_toe.Game{}
-	//s.StartGame()
+	//s.StartTerminalGame()
 
 	// Reads the system's environment variable called PORT
 	port := os.Getenv("PORT")

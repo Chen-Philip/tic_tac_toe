@@ -1,65 +1,52 @@
 package tic_tac_toe
 
-import (
-	"bufio"
-	"fmt"
-	"os"
-	"strconv"
-	"strings"
-)
-
 type Game struct {
-	turn  int
-	board Board
+	board      [3][3]int
+	winTracker [8]int
+	isWin      bool
 }
 
-func (g *Game) getMove() (int, int) {
-	x, y := -1, -1
-	for x == -1 && y == -1 {
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Make your move (x y): ")
-		line, _ := reader.ReadString('\n')
-		coords := strings.Fields(line)
-		if len(coords) != 2 {
-			fmt.Println("Please make a valid move in the form of x y.")
-		} else {
-			num1, err1 := strconv.Atoi(coords[0])
-			num2, err2 := strconv.Atoi(coords[1])
-
-			if (err1 != nil) || (err2 != nil) {
-				fmt.Println("The inputs have to be numbers.")
-			} else if g.board.isValidMove(num2, num1) {
-				x = num1
-				y = num2
-			}
+func (g *Game) resetBoard() {
+	// Resets the board
+	for i := 0; i < len(g.board); i++ {
+		for j := 0; j < len(g.board[i]); j++ {
+			g.board[i][j] = 0
 		}
 	}
-	return y, x
+	// Resets the tracker
+	for i := 0; i < len(g.winTracker); i++ {
+		g.winTracker[i] = 0
+	}
+	// Resets the win flag
+	g.isWin = false
 }
 
-func (g *Game) resetGame() {
-	g.board.resetBoard()
-	g.turn = 0
+func (g *Game) makeMove(x, y int, isPlayer1 bool) {
+	player := 1
+	if !isPlayer1 {
+		player = -1
+	}
+
+	// Updates the tracker
+	isWin := g.updateTracker(x, player)
+	isWin = isWin || g.updateTracker(3+y, player)
+	if x+y == 2 {
+		isWin = isWin || g.updateTracker(6, player)
+	}
+	if x == y {
+		isWin = isWin || g.updateTracker(7, player)
+	}
+
+	g.board[x][y] = player
+	g.isWin = isWin
 }
 
-func (g *Game) StartGame() {
-	hasWinner := false
-	i := 0
-	for !hasWinner && i < 9 {
-		x, y := g.getMove()
-		g.board.makeMove(x, y, i%2 == 0)
-		hasWinner = g.board.isWin
+func (g *Game) updateTracker(i, player int) bool {
+	g.winTracker[i] += player
+	return g.winTracker[i] == 3 || g.winTracker[i] == -3
+}
 
-		if !hasWinner {
-			i++
-		}
-	}
-
-	if hasWinner {
-		fmt.Println("Player", i%2, "has won!")
-	} else {
-		fmt.Println("It's a tie!")
-	}
-
-	g.resetGame()
+// Assumes the move is on the board
+func (g *Game) isValidMove(x, y int) bool {
+	return g.board[x][y] != 0
 }
