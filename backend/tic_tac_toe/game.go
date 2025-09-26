@@ -1,16 +1,17 @@
 package tic_tac_toe
 
 type Game struct {
-	board      [3][3]int
+	Board      [3][3]int
 	winTracker [8]int
-	isWin      bool
+	IsWin      bool
+	Turn       int
 }
 
-func (g *Game) resetBoard() {
-	// Resets the board
-	for i := 0; i < len(g.board); i++ {
-		for j := 0; j < len(g.board[i]); j++ {
-			g.board[i][j] = 0
+func (g *Game) ResetBoard() {
+	// Resets the Board
+	for i := 0; i < len(g.Board); i++ {
+		for j := 0; j < len(g.Board[i]); j++ {
+			g.Board[i][j] = 0
 		}
 	}
 	// Resets the tracker
@@ -18,14 +19,16 @@ func (g *Game) resetBoard() {
 		g.winTracker[i] = 0
 	}
 	// Resets the win flag
-	g.isWin = false
+	g.IsWin = false
 }
 
-func (g *Game) makeMove(x, y int, isPlayer1 bool) {
+func (g *Game) MakeMove(x, y int) {
 	player := 1
-	if !isPlayer1 {
+	if g.Turn%2 != 0 {
 		player = -1
 	}
+
+	g.Turn += 1
 
 	// Updates the tracker
 	isWin := g.updateTracker(x, player)
@@ -37,8 +40,8 @@ func (g *Game) makeMove(x, y int, isPlayer1 bool) {
 		isWin = isWin || g.updateTracker(7, player)
 	}
 
-	g.board[x][y] = player
-	g.isWin = isWin
+	g.Board[x][y] = player
+	g.IsWin = isWin
 }
 
 func (g *Game) updateTracker(i, player int) bool {
@@ -46,7 +49,7 @@ func (g *Game) updateTracker(i, player int) bool {
 	return g.winTracker[i] == 3 || g.winTracker[i] == -3
 }
 
-// Assumes the move is on the board
-func (g *Game) isValidMove(x, y int) bool {
-	return g.board[x][y] != 0
+// Assumes the move is on the Board
+func (g *Game) IsValidMove(x, y int) bool {
+	return g.Board[x][y] == 0
 }

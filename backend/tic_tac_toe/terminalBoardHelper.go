@@ -40,11 +40,11 @@ func (g *Game) isOnBoard(x, y int) bool {
 		fmt.Println("Input is out of bounds x y.")
 		return false
 	}
-	return g.isValidMove(x, y)
+	return g.IsValidMove(x, y)
 }
 
 func (g *Game) PrintBoard() {
-	for i, row := range g.board {
+	for i, row := range g.Board {
 		for j, cell := range row {
 			move := " "
 			if cell == -1 {
@@ -59,7 +59,7 @@ func (g *Game) PrintBoard() {
 			}
 		}
 		// Prints the divider
-		if i < len(g.board)-1 {
+		if i < len(g.Board)-1 {
 			fmt.Println("\n---+---+---")
 		}
 	}
@@ -71,9 +71,9 @@ func (g *Game) StartTerminalGame() {
 	i := 0
 	for !hasWinner && i < 9 {
 		x, y := g.getMoveFromTerminal()
-		g.makeMove(x, y, i%2 == 0)
+		g.MakeMove(x, y)
 		g.PrintBoard()
-		hasWinner = g.isWin
+		hasWinner = g.IsWin
 
 		if !hasWinner {
 			i++
@@ -86,5 +86,5 @@ func (g *Game) StartTerminalGame() {
 		fmt.Println("It's a tie!")
 	}
 
-	g.resetBoard()
+	g.ResetBoard()
 }
