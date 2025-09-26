@@ -31,7 +31,7 @@ func GameControllerWsHandler() gin.HandlerFunc {
 		gameID := c.Param("id")
 		fmt.Println("Gameroom ", gameID, ": websocket endpoint reached")
 
-		gameRoom := models.CreateOrGetGameRoom(c.Param("id"))
+		gameRoom := models.CreateOrGetGameRoom(gameID)
 
 		conn, err := Upgrade(c)
 		if err != nil {
