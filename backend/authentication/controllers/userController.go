@@ -75,6 +75,7 @@ func Signup() gin.HandlerFunc {
 		user.Password = &password
 		if count > 0 {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "this username already exists"})
+			return
 		}
 
 		// Creates the user
