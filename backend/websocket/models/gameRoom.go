@@ -42,11 +42,8 @@ func (gameRoom *GameRoom) StartGame() {
 			if len(gameRoom.Players) < 2 {
 				gameRoom.Players[newPlayer] = true
 				gameRoom.PlayerTurn = append(gameRoom.PlayerTurn, newPlayer)
-				fmt.Println("Player joined room ", len(gameRoom.Players))
 
-				fmt.Println(len(gameRoom.Players))
 				if len(gameRoom.Players) == 2 {
-					fmt.Println("Start game")
 					sendTurnMessage(gameRoom)
 				}
 
@@ -59,11 +56,9 @@ func (gameRoom *GameRoom) StartGame() {
 				newPlayer.Conn.Close()
 			}
 		case <-gameRoom.Unregister:
-			fmt.Println("unregister")
 
 			for p := range gameRoom.Players {
 				delete(gameRoom.Players, p)
-				fmt.Println("unregister 2")
 				p.Conn.WriteJSON(Message{
 					Type: TextMessageType,
 					Body: toRawJson("Your opponent left. Game closed."),
@@ -71,9 +66,7 @@ func (gameRoom *GameRoom) StartGame() {
 				p.Conn.Close()
 			}
 
-			fmt.Println("unregister 3")
 			if len(gameRoom.Players) == 0 {
-				fmt.Println("unregister 4")
 				delete(rooms, gameRoom.Game_id)
 				return
 			}
