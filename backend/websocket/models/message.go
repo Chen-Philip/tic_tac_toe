@@ -5,8 +5,8 @@ import "encoding/json"
 const (
 	TextMessageType      = 0
 	MoveMessageType      = 1
-	TurnMessageType      = 2
-	GameStateMessageType = 3
+	GameStateMessageType = 2
+	EndGameMessageType	 = 3
 )
 
 type Message struct {

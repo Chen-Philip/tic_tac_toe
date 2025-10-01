@@ -32,18 +32,18 @@ func (p *Player) Read() {
 			var move MoveMessage
 			json.Unmarshal(msg.Body, &move)
 			if p.GameRoom.GameState.IsWin {
-				p.Conn.WriteJSON(Message{Type: TurnMessageType, Body: toRawJson("The game is over!")})
+				p.Conn.WriteJSON(Message{Type: EndGameMessageType, Body: toRawJson("The game is over!")})
 				continue
 			}
 			if p != p.GameRoom.PlayerTurn[p.GameRoom.GameState.Turn%2] {
-				p.Conn.WriteJSON(Message{Type: TurnMessageType, Body: toRawJson("It's not your turn!")})
+				p.Conn.WriteJSON(Message{Type: TextMessageType, Body: toRawJson("It's not your turn!")})
 				continue
 			}
 			if p.GameRoom.GameState.IsValidMove(move.X, move.Y) {
 				p.GameRoom.GameState.MakeMove(move.X, move.Y)
 				p.GameRoom.Broadcast <- struct{}{}
 			} else {
-				p.Conn.WriteJSON(Message{Type: TurnMessageType, Body: toRawJson("That is not a valid move!")})
+				p.Conn.WriteJSON(Message{Type: TextMessageType, Body: toRawJson("That is not a valid move!")})
 			}
 		}
 

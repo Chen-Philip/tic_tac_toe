@@ -39,7 +39,7 @@ func main() {
 	// MaxAge: Kind of like a "remember me", gives time frame to not need the preflight request
 	// Whenever a request is sent, a preflight request is sent to make sure the frontend can access the backend
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},                 // React frontend, what websties can bacvkend talk to
+		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:3001"},                 // React frontend, what websties can bacvkend talk to
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"}, // Gives full method access
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{}, // Specify which headers can be read by frontend

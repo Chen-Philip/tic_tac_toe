@@ -43,14 +43,15 @@ func (gameRoom *GameRoom) StartGame() {
 				gameRoom.Players[newPlayer] = true
 				gameRoom.PlayerTurn = append(gameRoom.PlayerTurn, newPlayer)
 
-				if len(gameRoom.Players) == 2 {
-					sendTurnMessage(gameRoom)
-				}
 
 				go newPlayer.Read()
+				
+				if len(gameRoom.Players) == 2 {
+					gameRoom.Broadcast <- struct{}{}
+				}
 			} else {
 				newPlayer.Conn.WriteJSON(Message{
-					Type: TextMessageType,
+					Type: EndGameMessageType,
 					Body: toRawJson("This game room is full!"),
 				})
 				newPlayer.Conn.Close()
@@ -60,7 +61,7 @@ func (gameRoom *GameRoom) StartGame() {
 			for p := range gameRoom.Players {
 				delete(gameRoom.Players, p)
 				p.Conn.WriteJSON(Message{
-					Type: TextMessageType,
+					Type: EndGameMessageType,
 					Body: toRawJson("Your opponent left. Game closed."),
 				})
 				p.Conn.Close()
