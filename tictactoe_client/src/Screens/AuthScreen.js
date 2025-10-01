@@ -51,7 +51,7 @@ function AuthScreen() {
     try {
       const response = await axios.post(`${endpoint}${authPath}`, authData);
       console.log(" Login successful:", response.data);
-      navigate("/profile", { state: response.data });
+      navigate("/main", { state: response.data });
     } catch (error) {
       console.error("Login failed:", error.response?.data || error.message);
       alert("Login/Signup failed. Please try again.");
