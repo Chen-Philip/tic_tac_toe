@@ -1,14 +1,14 @@
 package controllers
 
 import (
-	"chess/database"
-	helper "chess/helpers"
-	"chess/models"
 	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"tictactoe/authentication/helpers"
+	"tictactoe/authentication/models"
+	"tictactoe/database"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -75,6 +75,7 @@ func Signup() gin.HandlerFunc {
 		user.Password = &password
 		if count > 0 {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "this username already exists"})
+			return
 		}
 
 		// Creates the user
@@ -82,7 +83,7 @@ func Signup() gin.HandlerFunc {
 		user.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		user.ID = primitive.NewObjectID()
 		user.User_id = user.ID.Hex()
-		token, refreshToken, _ := helper.GenerateAllTokens(*user.Username, *user.First_name, *user.Last_name, *&user.User_id)
+		token, refreshToken, _ := helpers.GenerateAllTokens(*user.Username, *user.First_name, *user.Last_name, *&user.User_id)
 		user.Token = &token
 		user.Refresh_token = &refreshToken
 
@@ -133,13 +134,13 @@ func Login() gin.HandlerFunc {
 			return
 		}
 
-		token, refreshToken, _ := helper.GenerateAllTokens(
+		token, refreshToken, _ := helpers.GenerateAllTokens(
 			*foundUser.Username,
 			*foundUser.First_name,
 			*foundUser.Last_name,
 			*&foundUser.User_id,
 		)
-		helper.UpdateAllTokens(token, refreshToken, foundUser.User_id)
+		helpers.UpdateAllTokens(token, refreshToken, foundUser.User_id)
 		err = userCollection.FindOne(ctx, bson.M{"user_id": foundUser.User_id}).Decode(&foundUser)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -219,7 +220,7 @@ func GetUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userId := c.Param("user_id")
 
-		if err := helper.MatchUserTypeToUid(c, userId); err != nil {
+		if err := helpers.MatchUserTypeToUid(c, userId); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}

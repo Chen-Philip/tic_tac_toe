@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	helper "chess/helpers"
 	"fmt"
 	"net/http"
+	helper "tictactoe/authentication/helpers"
 
 	"github.com/gin-gonic/gin"
 )
