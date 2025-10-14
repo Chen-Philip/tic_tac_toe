@@ -7,6 +7,7 @@ const (
 	MoveMessageType      = 1
 	GameStateMessageType = 2
 	EndGameMessageType	 = 3
+	PlayerTurnMessageType    = 4
 )
 
 type Message struct {
@@ -23,6 +24,10 @@ type GameStateMessage struct {
 	Board [3][3]int `json:"board"`
 	IsWin bool      `json:"IsWin"`
 	Turn  int       `json:"Turn"`
+}
+
+type PlayerTurnMessage struct {
+	Player  int       `json:"player"`
 }
 
 func toRawJson(v interface{}) json.RawMessage {
