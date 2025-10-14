@@ -62,6 +62,7 @@ function AuthScreen() {
     <Container textAlign="center" style={{ marginTop: "100px" }}>
       <Header as="h2">Login</Header>
       <Form onSubmit={handleSubmit}>
+        {/* Sign up screen info */}
         {!isLogin && (
           <>
             <Form.Input
@@ -88,6 +89,7 @@ function AuthScreen() {
           </>
         )}
 
+        {/* Sign up and Login screen shared UI */}
         <Form.Input
           label="Username"
           type="text"
@@ -105,6 +107,7 @@ function AuthScreen() {
           required
         />
 
+        {/* Sign up confirm password */}
         {!isLogin && (
             <Form.Input
               icon="lock"
@@ -119,10 +122,12 @@ function AuthScreen() {
           )
         }
 
+        {/* Signup / login button */}
         <Button primary type="submit">
           {isLogin ? "Login" : "Sign Up"}
         </Button>
-
+        
+        {/* Toggle between sign up or login */}
         <Button
           basic
           color="blue"

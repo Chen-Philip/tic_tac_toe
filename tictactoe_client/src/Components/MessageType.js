@@ -1,3 +1,4 @@
+// Backend message types
 export const MessageType = {
     TextMessageType: 0,
     MoveMessageType: 1,

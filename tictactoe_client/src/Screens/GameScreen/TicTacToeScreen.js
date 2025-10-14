@@ -36,8 +36,10 @@ function TicTacToeScreen({ message, onCellClick, onExit }) {
       return;
     }
     console.log(`type: ${parsedMessage.type}`)
+    // Gets the message type
     setMessageType(parsedMessage.type);
     switch (parsedMessage.type) {
+      // Pop-up message to show on palyer screen
       case MessageType.TextMessageType:
         setModalButtonText("Okay");
         setModalMessage(JSON.stringify(parsedMessage.body));
@@ -49,9 +51,11 @@ function TicTacToeScreen({ message, onCellClick, onExit }) {
         setShowModal(true);
         break;
       case MessageType.GameStateMessageType:
+        // Player made a move, so reflect that move on the board
         setHasOpponent(true)
         setBoard(parsedMessage.body.board);
         setYourTurn(parsedMessage.body.Turn % 2 == playerNum);
+        // If the game is over, show the game over UI
         if (parsedMessage.body.IsWin) {
           let winText
           if (yourTurn) {
@@ -64,15 +68,16 @@ function TicTacToeScreen({ message, onCellClick, onExit }) {
           setModalMessage(winText);
           setShowModal(true);
         } 
+        // The game is a tie
         if (parsedMessage.body.Turn > 9) {
           setModalButtonText("Leave Game");
           setMessageType(MessageType.EndGameMessageType);
           setModalMessage("It's a tie!");
           setShowModal(true);
         }
-        // setTurn(parsedMessage.body.Turn);
         break;
       case MessageType.PlayerTurnMessageType:
+        // Get what player the client is from the backend
         setPlayerNum(parsedMessage.body.player);
         break;
       default:
@@ -80,6 +85,7 @@ function TicTacToeScreen({ message, onCellClick, onExit }) {
     }
   }, [message]);
 
+  // Room isn't full so wait for opponent
   if (!hasOpponent) {
     return (
       <Container textAlign="center" style={{ marginTop: "50px" }}>
@@ -90,12 +96,15 @@ function TicTacToeScreen({ message, onCellClick, onExit }) {
 
   return (
     <Container textAlign="center" style={{ marginTop: "50px" }}>
+      {/* Shows who's turn it is */}
       <Header as="h2">Tic Tac Toe</Header>
       {yourTurn ? (
         <Header as="h3">Your Turn</Header>
       ) : (
         <Header as="h3">Opponent's Turn</Header>
       )}
+
+      {/* Message Pop-up */}
       {showModal && (
         <GameAlertModal
           msg={modalMessage}
@@ -104,6 +113,7 @@ function TicTacToeScreen({ message, onCellClick, onExit }) {
         />
       )}
 
+      {/* Tic-Tac-Toe Board */}
       <Table celled compact textAlign="center">
         <Table.Body>
           {board.map((row, rowIndex) => (

@@ -8,7 +8,7 @@ function MainScreen() {
   const user = location.state;
   return (
     <Container textAlign="center" style={{ marginTop: "100px" }}>
-
+      {/* Welcome user text */}
       {user ? (
         <Header as="h1">
           Welcome, {user.first_name} {user.last_name}
@@ -17,6 +17,7 @@ function MainScreen() {
         <Header>No user info</Header>
       )}
 
+      {/* Back Button */}
       <Button
         primary
         style={{ marginTop: "20px" }}
@@ -25,6 +26,7 @@ function MainScreen() {
         Back
       </Button>
 
+      {/* Play Button */}
       <Button
         secondary
         style={{ marginTop: "20px", marginLeft: "10px" }}
@@ -32,7 +34,6 @@ function MainScreen() {
       >
         Play
       </Button>
-
     </Container>
   );
 }

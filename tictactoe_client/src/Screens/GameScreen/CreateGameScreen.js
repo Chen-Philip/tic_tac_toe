@@ -6,6 +6,7 @@ function CreateGameScreen({ onSubmit }) {
 
   return (
     <Container textAlign="center" style={{ marginTop: "100px" }}>
+      {/* Get the game room name */}
       <Header as="h1">
         Enter Game Room ID
       </Header>
@@ -17,7 +18,7 @@ function CreateGameScreen({ onSubmit }) {
           onChange={(e) => setgameId(e.target.value)}
         />
       </Form>
-
+      {/* Button for creating the game */}
       <Button
         primary
         onClick={() => onSubmit(gameId)}>
