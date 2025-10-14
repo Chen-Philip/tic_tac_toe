@@ -40,10 +40,17 @@ func (gameRoom *GameRoom) StartGame() {
 		select { // listens for channels to have data
 		case newPlayer := <-gameRoom.Register: // Register channel has data
 			if len(gameRoom.Players) < 2 {
+				message, _ := json.Marshal(PlayerTurnMessage{
+					Player: len(gameRoom.Players),
+				})
+				newPlayer.Conn.WriteJSON(Message{
+					Type: PlayerTurnMessageType,
+					Body: message,
+				})
+
 				gameRoom.Players[newPlayer] = true
 				gameRoom.PlayerTurn = append(gameRoom.PlayerTurn, newPlayer)
-
-
+				
 				go newPlayer.Read()
 				
 				if len(gameRoom.Players) == 2 {
