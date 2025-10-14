@@ -7,7 +7,7 @@ function GameAlertModal({ msg, buttonText, handleButtonClick }) {
     handleButtonClick()
     setOpen(false)
   };
-
+  // Simply pop-up message UI
   return (
     <>
       <Modal open={open} size="small">

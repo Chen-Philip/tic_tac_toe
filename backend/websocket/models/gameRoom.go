@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"tictactoe/tic_tac_toe"
 )
 
@@ -23,7 +22,7 @@ func CreateOrGetGameRoom(gameId string) *GameRoom {
 		rooms[gameId] = &GameRoom{
 			Game_id:    gameId,
 			Register:   make(chan *Player),
-			Unregister: make(chan *Player), // not sure if needed
+			Unregister: make(chan *Player),
 			Players:    make(map[*Player]bool),
 			PlayerTurn: make([]*Player, 0),
 			Broadcast:  make(chan struct{}),
@@ -40,6 +39,7 @@ func (gameRoom *GameRoom) StartGame() {
 		select { // listens for channels to have data
 		case newPlayer := <-gameRoom.Register: // Register channel has data
 			if len(gameRoom.Players) < 2 {
+				// Tells the client which player they are
 				message, _ := json.Marshal(PlayerTurnMessage{
 					Player: len(gameRoom.Players),
 				})
@@ -47,54 +47,54 @@ func (gameRoom *GameRoom) StartGame() {
 					Type: PlayerTurnMessageType,
 					Body: message,
 				})
-
+				// Add player to the room
 				gameRoom.Players[newPlayer] = true
 				gameRoom.PlayerTurn = append(gameRoom.PlayerTurn, newPlayer)
-				
+				// Create goroutine to read player moves
 				go newPlayer.Read()
-				
+				// Let the players know the game started
 				if len(gameRoom.Players) == 2 {
 					gameRoom.Broadcast <- struct{}{}
 				}
 			} else {
+				// The room is already full
 				newPlayer.Conn.WriteJSON(Message{
 					Type: EndGameMessageType,
 					Body: toRawJson("This game room is full!"),
 				})
 				newPlayer.Conn.Close()
 			}
-		case <-gameRoom.Unregister:
-
+		case <-gameRoom.Unregister: // Player leaves the game
+			// Close the game room
 			for p := range gameRoom.Players {
+				// Removes player from the gameroom's player list
 				delete(gameRoom.Players, p)
+				// Disconnects the other player
 				p.Conn.WriteJSON(Message{
 					Type: EndGameMessageType,
 					Body: toRawJson("Your opponent left. Game closed."),
 				})
 				p.Conn.Close()
 			}
-
+			// Removes the room from the list of gamerooms
 			if len(gameRoom.Players) == 0 {
 				delete(rooms, gameRoom.Game_id)
 				return
 			}
-			fmt.Println("unregister 5")
-		case <-gameRoom.Broadcast:
-			fmt.Println("Broadcast")
+		case <-gameRoom.Broadcast: // Notify all players of the move
+			// Creates message
 			message, _ := json.Marshal(GameStateMessage{
 				Board: gameRoom.GameState.Board,
 				IsWin: gameRoom.GameState.IsWin,
 				Turn:  gameRoom.GameState.Turn,
 			})
-			fmt.Println("send Broadcast")
 			broadcastMsg := Message{
 				Type: GameStateMessageType,
 				Body: message,
 			}
+			// Sends the message
 			for p := range gameRoom.Players {
-				if p.Conn.WriteJSON(broadcastMsg) != nil {
-					fmt.Println("A broadcasting error has occurred")
-				}
+				p.Conn.WriteJSON(broadcastMsg)
 			}
 		}
 	}

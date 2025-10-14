@@ -24,9 +24,9 @@ function GameScreen() {
     }
     navigate(-1);
   };
-
+  {/* Handles the game websocket */}
   const handleJoinGame = (gameId) => {
-    // Here you would normally connect to your game backend
+    // Connect to game
     console.log("Joining/Creating room:", gameId);
     console.log(`${WS_ENDPOINT}/${gameId}`);
     ws.current = new WebSocket(`${WS_ENDPOINT}/${gameId}`);
@@ -49,6 +49,7 @@ function GameScreen() {
     
   };
 
+  // Register player making a move
   const handleCellClick = (row, col) => {
     console.log("Clicked cell:", row, col);
     
@@ -64,7 +65,7 @@ function GameScreen() {
   
     return (
       <Container textAlign="center" style={{ marginTop: "100px" }}>
-				
+				{/* Handle logic for showing game or for game creation screen*/}
 				{showGameCreationScreen ? (
 					<CreateGameScreen
             onSubmit={handleJoinGame}
