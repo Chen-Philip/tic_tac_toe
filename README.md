@@ -23,13 +23,13 @@ The backend consists of 2 main sections:
 1. Authenticaiton
 
    This project is my first introduction to backend, so I had to self-learn a lot of the fundamentals. Authentication was the first backend feature I implemented for this project and at this point,
-   I had 0 experience with backend development. So, for this feature, I closely follwed [youtube tutorial](https://www.youtube.com/watch?v=Cr3BiwGN2Tg) by Akhill. As a result, most, if not all of the code, is directly from the youtube tutorial.
+   I had 0 experience with backend development. So, for this feature, I closely follwed this [youtube tutorial](https://www.youtube.com/watch?v=Cr3BiwGN2Tg) by Akhill. As a result, most, if not all of the code, is directly from the youtube tutorial.
    However, I didn't just blindly copy what he did, but rather I took time to understand each line of code did andthe though process behind it. In fact, throughout the codebase, you can see the comments where I explained what each part of the code
    does to ensure my understanding. Thanks to that, I was able to learn a lot about the basics of backend development and how to use the GIN framework.
 3. Game Creation /  Real-time game logic
 
    After creating the authentication, I'm more familliar with backend developement, so I didn't need to rely as heavily on youtube tutorials. The main challenge in this stage was implementing real-time gameplay, which required using WebSockets
-   instead of traditional API calls, which I had no experience in. So I used this [Websocket Youtube Tutorial](https://www.youtube.com/watch?v=_hFPoXoMwXQ) by Akhill as reference for my backend logic. By learning "Pool" strucutre used in the
+   instead of traditional API calls, which I had no experience in. So I used this [Websocket Youtube Tutorial](https://www.youtube.com/watch?v=_hFPoXoMwXQ) by Akhill as reference for my backend logic. By learning the "Pool" strucutre used in the
    video and modifying it to suit my needs, along with my exepreience I gained from implmeenting authenticaiton, I was able to build the real-time gameplay logic without relying to heaviliy on the youtube tutorial.
    This tutorial also taught me how to connect my backend to my frontend later on.
 
